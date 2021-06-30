@@ -1,13 +1,21 @@
-import logo from "./assets/logo.png";
 import "./App.css";
 import {useEffect, useRef, useState} from "react";
 import {apiRequest} from "./lib/api/api";
 import {movieList} from "./lib/api/url";
+import Characters from "./components/Characters";
+import logo from "./assets/images/logo.png";
+import loader from "./assets/images/loader.gif";
 
 function App() {
+  const initialFilters = {
+    isNameAscending: false,
+    isHeightAscending: false,
+    gender: "all",
+  };
   const [films, setFilms] = useState([]);
   const [selectedFilm, setSelectedFilm] = useState(null);
-  const [selectedFilmCharacters, setSelectedFilmCharacters] = useState([]);
+  const [filmCharacters, setFilmCharacters] = useState([]);
+  const [filters, setFilters] = useState(initialFilters);
   const isMounted = useRef(false);
   useEffect(() => {
     isMounted.current = true;
@@ -21,18 +29,15 @@ function App() {
     };
   }, []);
 
-  const fetchCharacter = (url) => {
-    return apiRequest(url, "get", {});
-  };
-
   const fetchAllCharacters = async () => {
     const allCharacters = await Promise.all(
-      selectedFilm.characters.map(fetchCharacter)
+      selectedFilm.characters.map((url) => apiRequest(url, "get", {}))
     );
-    setSelectedFilmCharacters(allCharacters);
+    isMounted.current && setFilmCharacters(allCharacters);
   };
 
   useEffect(() => {
+    //fetch character when movie is selected
     if (selectedFilm) {
       fetchAllCharacters();
     }
@@ -47,60 +52,50 @@ function App() {
           }`}
         >
           <img src={logo} className="app-logo" alt="logo" />
-          <form>
-            <select
-              className="movie-dropdown"
-              onChange={(e) => {
-                isMounted.current && setSelectedFilm(films[e.target.value]);
-                isMounted.current && setSelectedFilmCharacters([]);
-              }}
-            >
-              <option>Select a movie</option>
-              {films.map(({title}, i) => (
-                <option value={i} key={`${i}`}>
-                  {title}
-                </option>
-              ))}
-            </select>
-          </form>
+          {!films.length ? (
+            <img src={loader} alt="fetching movies" className="loader-gif" />
+          ) : (
+            <form>
+              <select
+                className="movie-dropdown"
+                onChange={(e) => {
+                  if (isMounted.current) {
+                    setSelectedFilm(films[e.target.value]);
+                    setFilmCharacters([]);
+                    setFilters(initialFilters);
+                  }
+                }}
+              >
+                <option>Select a movie</option>
+                {films.map(({title}, i) => (
+                  <option value={i} key={`${i}`}>
+                    {title}
+                  </option>
+                ))}
+              </select>
+            </form>
+          )}
         </div>
       </section>
       <section id="content-section">
         <div className={`app-content`}>
+          {/* Opening Crawl for selected movie */}
           {selectedFilm && (
-            <marquee
-              direction="up"
-              loop={4}
-              height={130}
-              vSpace={20}
-              scrollAmount={2}
-            >
-              <span>{selectedFilm.opening_crawl}</span>
-            </marquee>
-          )}
-          {selectedFilmCharacters.length && (
-            <div className="content-table">
-              <table>
-                <thead>
-                  <tr>
-                    <th>No.</th>
-                    <th>Full Name</th>
-                    <th>Gender</th>
-                    <th>Height</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {selectedFilmCharacters.map(({name, gender, height}, i) => (
-                    <tr key={i}>
-                      <td>{i + 1}</td>
-                      <td>{name}</td>
-                      <td>{gender}</td>
-                      <td>{height}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="opening-crawl">
+              <marquee direction="up" loop={"1"} scrollDelay={200} height={200}>
+                <span>{selectedFilm.opening_crawl}</span>
+              </marquee>
             </div>
+          )}
+
+          {/* Table for characters in selected movie */}
+          {!filmCharacters?.length ? <img src={loader} alt="fetching movies" className="loader-gif" /> : (
+            <Characters
+              filters={filters}
+              onFilter={setFilters}
+              filmCharacters={filmCharacters}
+              setFilmCharacters={setFilmCharacters}
+            />
           )}
         </div>
       </section>
