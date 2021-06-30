@@ -1,38 +1,119 @@
-.App {
+html {
+  font-size: 16px;
+}
+
+body {
+  background-color: #151617;
+
+}
+
+.app {
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
+.app-logo {
+  height: 20vmin;
   pointer-events: none;
+  margin-bottom: 1.5rem;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.app-header {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.app-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
 }
 
-@keyframes App-logo-spin {
+.movie-empty {
+  min-height: 100vh;
+}
+
+.movie-selected {
+  animation: headerAnim 0.5s;
+}
+
+@keyframes headerAnim {
   from {
-    transform: rotate(0deg);
+    min-height: 100vh;
   }
   to {
-    transform: rotate(360deg);
+    min-height: 0vh;
+  }
+}
+
+.movie-dropdown {
+  height: 3.6rem;
+  border-radius: 0.5rem;
+  background-color: #2f343c;
+  outline: none;
+  color: #fff;
+  font-size: 1.3rem;
+  padding: 0 1.2rem;
+}
+
+marquee {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #ffec00;
+  line-height: 2.8rem;
+}
+
+.content-table table {
+  color: #fff;
+}
+
+table {
+  background-color: #1f2123;
+  padding: 2rem;
+  border-radius: 0.5rem;
+
+}
+
+table tr td {
+  line-height: 2rem;
+  font-size: 1.2rem;
+}
+
+table tr {
+  text-align: left;
+}
+
+table tbody tr:nth-child(odd) {
+  background-color: #2d2c2c;
+}
+
+table td, table th {
+  padding: 0.4rem 1.2rem;
+}
+
+table th {
+  font-size: 1.3rem;
+  padding-bottom: 1.2rem;
+}
+
+@media only screen and (max-width: 600) {
+  .movie-dropdown {}
+}
+
+@media only screen and (min-width: 600) {
+  .movie-dropdown {}
+}
+
+@media only screen and (min-width: 768px) {
+  .movie-dropdown {
+    width: 560px
+  }
+  marquee, .content-table, table {
+    width: 700px;
   }
 }
